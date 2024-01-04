@@ -5,7 +5,10 @@ import net.biancheng.c.entity.Dept;
 import net.biancheng.c.service.DeptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -26,7 +29,7 @@ public class DeptController {
     public Dept get(@PathVariable("id") int id) {
         return deptService.get(id);
     }
-    // http://localhost:8001/dept/list
+    // http://localhost:8003/dept/list
     @RequestMapping(value = "/dept/list", method = RequestMethod.GET)
     public List<Dept> list() {
         return deptService.selectAll();

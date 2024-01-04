@@ -8,6 +8,9 @@
         <module>micro-service-cloud-api</module>
         <module>micro-service-cloud-eureka-7001</module>
         <module>micro-service-cloud-provider-dept-8001</module>
+        <module>micro-service-cloud-consumer-dept-80</module>
+        <module>micro-service-cloud-provider-dept-8002</module>
+        <module>micro-service-cloud-provider-dept-8003</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
