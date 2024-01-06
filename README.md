@@ -1,13 +1,61 @@
 
-Ribbon：Spring Cloud负载均衡与服务调用组件 https://c.biancheng.net/springcloud/ribbon.html
-代码分支:Branche_Ribbon
+Gateway：Spring Cloud API网关组件 https://c.biancheng.net/springcloud/gateway.html
+代码分支:Branche_Gateway
 
-依次启动 
-micro-service-cloud-eureka-7001
-micro-service-cloud-provider-dept-8001/8002/8003（服务提供者集群）
-micro-service-cloud-consumer-dept-80（服务消费者）
 
-注册中心:http://localhost:7001/
-接口访问测试:http://localhost:8000/consumer/dept/get/1
+Predicate 断言
+Spring Cloud Gateway 动态路由
+Filter 过滤器
+
+
+在微服务架构中，一个系统往往由多个微服务组成，而这些服务可能部署在不同机房、不同地区、不同域名下。这种情况下，客户端（例如浏览器、手机、软件工具等）想要直接请求这些服务，就需要知道它们具体的地址信息，例如 IP 地址、端口号等。
+
+这种客户端直接请求服务的方式存在以下问题：
+当服务数量众多时，客户端需要维护大量的服务地址，这对于客户端来说，是非常繁琐复杂的。
+在某些场景下可能会存在跨域请求的问题。
+身份认证的难度大，每个微服务需要独立认证。
+
+
+API 网关
+API 网关是一个搭建在客户端和微服务之间的服务，我们可以在 API 网关中处理一些非业务功能的逻辑，例如权限验证、监控、缓存、请求路由等。
+
+API 网关就像整个微服务系统的门面一样，是系统对外的唯一入口。有了它，客户端会先将请求发送到 API 网关，然后由 API 网关根据请求的标识信息将请求转发到微服务实例
+
+
+对于服务数量众多、复杂度较高、规模比较大的系统来说，使用 API 网关具有以下好处：
+客户端通过 API 网关与微服务交互时，客户端只需要知道 API 网关地址即可，而不需要维护大量的服务地址，简化了客户端的开发。
+客户端直接与 API 网关通信，能够减少客户端与各个服务的交互次数。
+客户端与后端的服务耦合度降低。
+节省流量，提高性能，提升用户体验。
+API 网关还提供了安全、流控、过滤、缓存、计费以及监控等 API 管理功能。
+
+
+常见的 API 网关实现方案主要有以下 5 种：
+Spring Cloud Gateway
+Spring Cloud Netflix Zuul
+Kong
+Nginx+Lua
+Traefik
+
+
+
+Spring Cloud Gateway 核心概念	
+Route（路由）	网关最基本的模块。它由一个 ID、一个目标 URI、一组断言（Predicate）和一组过滤器（Filter）组成。
+Predicate（断言）	路由转发的判断条件，我们可以通过 Predicate 对 HTTP 请求进行匹配，例如请求方式、请求路径、请求头、参数等，如果请求与断言匹配成功，则将请求转发到相应的服务。
+Filter（过滤器）	过滤器，我们可以使用它对请求进行拦截和修改，还可以使用它对上文的响应进行再处理。
+
+
+Filter 过滤器
+通常情况下，出于安全方面的考虑，服务端提供的服务往往都会有一定的校验逻辑，例如用户登陆状态校验、签名校验等。
+
+在微服务架构中，系统由多个微服务组成，所有这些服务都需要这些校验逻辑，此时我们就可以将这些校验逻辑写到 Spring Cloud Gateway 的 Filter 过滤器中。
+过滤器类型	说明
+Pre 类型	这种过滤器在请求被转发到微服务之前可以对请求进行拦截和修改，例如参数校验、权限校验、流量监控、日志输出以及协议转换等操作。
+Post 类型	这种过滤器在微服务对请求做出响应后可以对响应进行拦截和再处理，例如修改响应内容或响应头、日志输出、流量监控等。
+
+按照作用范围划分，Spring Cloud gateway 的 Filter 可以分为 2 类：
+GatewayFilter：应用在单个路由或者一组路由上的过滤器。
+GlobalFilter：应用在所有的路由上的过滤器。  implements GlobalFilter, Ordered
+
 
 
