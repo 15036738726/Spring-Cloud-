@@ -1,11 +1,6 @@
 server:
   port: 7001  #该 Module 的端口号
 
-#spring:
-#  application:
-#    name: eureka7001.com  #微服务名称
-
-
 eureka:
   instance:
     hostname: localhost #eureka服务端的实例名称，

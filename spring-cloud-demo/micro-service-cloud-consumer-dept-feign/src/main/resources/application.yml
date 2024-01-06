@@ -9,9 +9,41 @@ eureka:
       #defaultZone: http://eureka7001.com:7001/eureka/,http://eureka7002.com:7002/eureka/,http://eureka7003.com:7003/eureka/
       defaultZone: http://localhost:7001/eureka/
 
+######################### Ribbon 客户端超时控制 ###################################
 ribbon:
   ReadTimeout: 6000 #建立连接所用的时间，适用于网络状况正常的情况下，两端两端连接所用的时间
   ConnectionTimeout: 6000 #建立连接后，服务器读取到可用资源的时间
+
+#Hystrix 可以来为所有请求（方法）设置超时时间（单位为毫秒），若请求超时则触发全局的回退方法进行处理
+#hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=mmm
+#Hystrix 还可以为某个特定的服务请求（方法）设置超时时间，格式如下：
+#hystrix.command.xxx#yyy(zzz).execution.isolation.thread.timeoutInMilliseconds=mmm
+
+######################配置请求超时时间##########################
+hystrix:
+  command:
+    ####################全局方法超时时间 为 7 秒########################
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 7000
+    ####################配置具体方法超时时间 为 3 秒########################
+    DeptHystrixService#deptInfo_Timeout(Integer):
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 3000
+    #    格式说明如下：
+    #    xxx：为包含该服务方法的类的名称（通常为服务绑定接口的名称），例如 DeptHystrixService 接口。
+    #    yyy：服务方法名，例如 deptInfo_Timeout() 方法。
+    #    zzz：方法内的参数类型，例如 Integer、String 等等
+    #    mmm：要设置的超时时间，单位为毫秒（1 秒 =1000 毫秒）
+
+
+feign:
+  hystrix:
+    enabled: true #开启客户端 hystrix
 
 logging:
   level:

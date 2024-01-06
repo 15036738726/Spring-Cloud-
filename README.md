@@ -1,23 +1,50 @@
-OpenFeign：Spring Cloud声明式服务调用组件 https://c.biancheng.net/springcloud/open-feign.html
+Hystrix：Spring Cloud服务熔断与降级组件 https://c.biancheng.net/springcloud/hystrix.html
 
-代码分支:Branche_OpenFeign
+代码分支:Branche_Hystrix 
+
+能够有效地阻止分布式微服务系统中出现联动故障，以提高微服务系统的弹性。Spring Cloud Hystrix 具有服务降级、服务熔断、线程隔离、请求缓存、请求合并以及实时故障监控等强大功能
 
 内容：
-OpenFeign 实现远程服务调用
-OpenFeign 超时控制
-OpenFeign 日志增强
-
-依次启动 
-micro-service-cloud-eureka-7001
-micro-service-cloud-provider-dept-8001/8002/8003（服务提供者集群）
-micro-service-cloud-consumer-dept-feign（对比服务消费者micro-service-cloud-consumer-dept-80实现服务调用更加的简单）
+服务端降级
+客户端降级
+全局降级方法
+解耦降级逻辑
+Hystrix 服务熔断
+Hystrix 故障监控
 
 
-注册中心:http://localhost:7001/
+熔断机制是为了应对雪崩效应而出现的一种微服务链路保护机制。
 
-接口访问测试:
-http://localhost:8000/consumer/dept/get/1
-http://localhost:8000/consumer/dept/list
-http://localhost:8000/consumer/dept/feign/timeout
+当微服务系统中的某个微服务不可用或响应时间太长时，为了保护系统的整体可用性，熔断器会暂时切断请求对该服务的调用，并快速返回一个友好的错误响应。这种熔断状态不是永久的，在经历了一定的时间后，熔断器会再次检测该微服务是否恢复正常，若服务恢复正常则恢复其调用链路。
+熔断状态
+在熔断机制中涉及了三种熔断状态：
+熔断关闭状态（Closed）：当服务访问正常时，熔断器处于关闭状态，服务调用方可以正常地对服务进行调用。
+熔断开启状态（Open）：默认情况下，在固定时间内接口调用出错比率达到一个阈值（例如 50%），熔断器会进入熔断开启状态。进入熔断状态后，后续对该服务的调用都会被切断，熔断器会执行本地的降级（FallBack）方法。
+半熔断状态（Half-Open）： 在熔断开启一段时间之后，熔断器会进入半熔断状态。在半熔断状态下，熔断器会尝试恢复服务调用方对服务的调用，允许部分请求调用该服务，并监控其调用成功率。如果成功率达到预期，则说明服务已恢复正常，熔断器进入关闭状态；如果成功率仍旧很低，则重新进入熔断开启状态。
+
+Hystrix 实现服务熔断的步骤如下：
+当服务的调用出错率达到或超过 Hystix 规定的比率（默认为 50%）后，熔断器进入熔断开启状态。
+熔断器进入熔断开启状态后，Hystrix 会启动一个休眠时间窗，在这个时间窗内，该服务的降级逻辑会临时充当业务主逻辑，而原来的业务主逻辑不可用。
+当有请求再次调用该服务时，会直接调用降级逻辑快速地返回失败响应，以避免系统雪崩。
+当休眠时间窗到期后，Hystrix 会进入半熔断转态，允许部分请求对服务原来的主业务逻辑进行调用，并监控其调用成功率。
+如果调用成功率达到预期，则说明服务已恢复正常，Hystrix 进入熔断关闭状态，服务原来的主业务逻辑恢复；否则 Hystrix 重新进入熔断开启状态，休眠时间窗口重新计时，继续重复第 2 到第 5 步。
+
+metrics.rollingStats.timeInMilliseconds	统计时间窗。
+
+
+circuitBreaker.sleepWindowInMilliseconds	休眠时间窗，熔断开启状态持续一段时间后，熔断器会自动进入半熔断状态，这段时间就被称为休眠窗口期。
+
+
+circuitBreaker.requestVolumeThreshold	请求总数阀值。
+在统计时间窗内，请求总数必须到达一定的数量级，Hystrix 才可能会将熔断器打开进入熔断开启转态，而这个请求数量级就是 请求总数阀值。Hystrix 请求总数阈值默认为 20，这就意味着在统计时间窗内，如果服务调用次数不足 20 次，即使所有的请求都调用出错，熔断器也不会打开。
+
+
+circuitBreaker.errorThresholdPercentage	错误百分比阈值。
+当请求总数在统计时间窗内超过了请求总数阀值，且请求调用出错率超过一定的比例，熔断器才会打开进入熔断开启转态，而这个比例就是错误百分比阈值。错误百分比阈值设置为 50，就表示错误百分比为 50%，如果服务发生了 30 次调用，其中有 15 次发生了错误，即超过了 50% 的错误百分比，这时候将熔断器就会打开。
+
+
+
+
+
 
 
