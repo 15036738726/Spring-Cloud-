@@ -2,6 +2,11 @@
 Ribbon：Spring Cloud负载均衡与服务调用组件 https://c.biancheng.net/springcloud/ribbon.html
 代码分支:Branche_Ribbon
 
+
+Ribbon 实现负载均衡
+切换负载均衡策略
+定制负载均衡策略  extends AbstractLoadBalancerRule 
+
 依次启动 
 micro-service-cloud-eureka-7001
 micro-service-cloud-provider-dept-8001/8002/8003（服务提供者集群）
